@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports Dashboard</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+            
+            --success: #10b981;
+            --success-bg: rgba(16, 185, 129, 0.12);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.12);
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.12);
+            --info: #6b7280;
+            --info-bg: rgba(107, 114, 128, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .title-area h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .title-area p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Glassmorphic Dashboard Card */
+        .dashboard-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.75rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        /* Filters Section */
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            align-items: flex-end;
+            margin-bottom: 1.75rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.75rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .control-input {
+            background-color: rgba(17, 24, 39, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.625rem 0.875rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            outline: none;
+            width: 100%;
+        }
+
+        .control-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        /* Export Button */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-secondary);
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Table Section */
+        .table-container {
+            overflow-x: auto;
+            position: relative;
+            min-height: 250px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.925rem;
+        }
+
+        th {
+            padding: 1rem 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s ease;
+        }
+
+        th:hover {
+            color: var(--text-primary);
+        }
+
+        th .sort-icon {
+            display: inline-block;
+            margin-left: 0.35rem;
+            width: 0.75rem;
+            height: 0.75rem;
+            vertical-align: middle;
+            transition: transform 0.2s ease;
+        }
+
+        td {
+            padding: 1.125rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+
+        tr {
+            transition: background-color 0.15s ease;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .badge-pending {
+            color: var(--warning);
+            background-color: var(--warning-bg);
+        }
+
+        .badge-approved {
+            color: var(--success);
+            background-color: var(--success-bg);
+        }
+
+        .badge-rejected {
+            color: var(--danger);
+            background-color: var(--danger-bg);
+        }
+
+        .badge-archived {
+            color: var(--text-secondary);
+            background-color: var(--info-bg);
+        }
+
+        /* Pagination & Footer controls */
+        .footer-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.75rem;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .pagination-btn {
+            background-color: rgba(17, 24, 39, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            width: 2.25rem;
+            height: 2.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-secondary);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            padding: 0 0.5rem;
+        }
+
+        .limit-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .limit-selector select {
+            width: auto;
+            padding-right: 2rem;
+        }
+
+        /* Loading Spinner */
+        .loader-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(11, 15, 25, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 10;
+        }
+
+        .loader-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .spinner {
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 3px solid rgba(99, 102, 241, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .no-data svg {
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+            .footer-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .pagination {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="title-area">
+                <h1>Reports Archive</h1>
+                <p>Track, filter, and export organization expenses and operational summaries</p>
+            </div>
+            <div>
+                <button id="btn-export" class="btn">
+                    <!-- Download SVG Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Export CSV
+                </button>
+            </div>
+        </header>
+
+        <div class="dashboard-card">
+            <!-- Filters Grid -->
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="filter-status">Status</label>
+                    <select id="filter-status" class="control-input">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="archived">Archived</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-date-from">Date From</label>
+                    <input type="date" id="filter-date-from" class="control-input">
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-date-to">Date To</label>
+                    <input type="date" id="filter-date-to" class="control-input">
+                </div>
+
+                <div class="filter-group">
+                    <div class="button-group">
+                        <button id="btn-reset" class="btn btn-outline" style="width: 100%;">Reset Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Section with loader -->
+            <div class="table-container">
+                <div id="loader" class="loader-overlay">
+                    <div class="spinner"></div>
+                </div>
+                
+                <table id="reports-table">
+                    <thead>
+                        <tr>
+                            <th data-field="id">ID <span class="sort-icon" id="sort-id"></span></th>
+                            <th data-field="title">Title <span class="sort-icon" id="sort-title"></span></th>
+                            <th data-field="status">Status <span class="sort-icon" id="sort-status"></span></th>
+                            <th data-field="owner">Owner <span class="sort-icon" id="sort-owner"></span></th>
+                            <th data-field="amount" style="text-align: right;">Amount <span class="sort-icon" id="sort-amount"></span></th>
+                            <th data-field="created_at">Created At <span class="sort-icon" id="sort-created_at"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Filled by JavaScript -->
+                    </tbody>
+                </table>
+
+                <div id="no-data-view" class="no-data" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <p>No reports found matching the selected filters.</p>
+                </div>
+            </div>
+
+            <!-- Footer Pagination Controls -->
+            <div class="footer-controls">
+                <div class="limit-selector">
+                    <span>Show</span>
+                    <select id="limit-select" class="control-input" style="padding: 0.375rem 1.75rem 0.375rem 0.75rem; width: auto;">
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <span>entries</span>
+                </div>
+
+                <div id="showing-entries-text">
+                    Showing 0 to 0 of 0 entries
+                </div>
+
+                <div class="pagination">
+                    <button id="btn-prev" class="pagination-btn" title="Previous Page">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <span class="page-info">Page <strong id="current-page">1</strong> of <strong id="total-pages">1</strong></span>
+                    <button id="btn-next" class="pagination-btn" title="Next Page">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        const state = {
+            status: '',
+            date_from: '',
+            date_to: '',
+            sort: 'created_at',
+            descending: true,
+            offset: 0,
+            limit: 20,
+            total: 0
+        };
+
+        // DOM elements
+        const statusFilter = document.getElementById('filter-status');
+        const dateFromFilter = document.getElementById('filter-date-from');
+        const dateToFilter = document.getElementById('filter-date-to');
+        const btnReset = document.getElementById('btn-reset');
+        const btnExport = document.getElementById('btn-export');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const limitSelect = document.getElementById('limit-select');
+        const tableBody = document.getElementById('table-body');
+        const noDataView = document.getElementById('no-data-view');
+        const loader = document.getElementById('loader');
+        const currentPageEl = document.getElementById('current-page');
+        const totalPagesEl = document.getElementById('total-pages');
+        const showingEntriesText = document.getElementById('showing-entries-text');
+        const reportsTable = document.getElementById('reports-table');
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData();
+            setupEventListeners();
+            updateSortIndicators();
+        });
+
+        function setupEventListeners() {
+            // Filter listeners
+            statusFilter.addEventListener('change', (e) => {
+                state.status = e.target.value;
+                state.offset = 0; // Reset pagination
+                fetchData();
+            });
+
+            dateFromFilter.addEventListener('change', (e) => {
+                state.date_from = e.target.value;
+                state.offset = 0;
+                fetchData();
+            });
+
+            dateToFilter.addEventListener('change', (e) => {
+                state.date_to = e.target.value;
+                state.offset = 0;
+                fetchData();
+            });
+
+            btnReset.addEventListener('click', () => {
+                statusFilter.value = '';
+                dateFromFilter.value = '';
+                dateToFilter.value = '';
+                
+                state.status = '';
+                state.date_from = '';
+                state.date_to = '';
+                state.offset = 0;
+                fetchData();
+            });
+
+            // Pagination listeners
+            limitSelect.addEventListener('change', (e) => {
+                state.limit = parseInt(e.target.value, 10);
+                state.offset = 0;
+                fetchData();
+            });
+
+            btnPrev.addEventListener('click', () => {
+                if (state.offset > 0) {
+                    state.offset = Math.max(0, state.offset - state.limit);
+                    fetchData();
+                }
+            });
+
+            btnNext.addEventListener('click', () => {
+                if (state.offset + state.limit < state.total) {
+                    state.offset += state.limit;
+                    fetchData();
+                }
+            });
+
+            // Sort listeners (delegated)
+            document.querySelectorAll('#reports-table th').forEach(th => {
+                th.addEventListener('click', () => {
+                    const field = th.dataset.field;
+                    if (!field) return;
+
+                    if (state.sort === field) {
+                        state.descending = !state.descending;
+                    } else {
+                        state.sort = field;
+                        state.descending = true;
+                    }
+                    state.offset = 0; // Reset pagination
+                    updateSortIndicators();
+                    fetchData();
+                });
+            });
+
+            // CSV Export listener
+            btnExport.addEventListener('click', () => {
+                exportCSV();
+            });
+        }
+
+        // Update sorting chevron/triangle symbols on header elements
+        function updateSortIndicators() {
+            document.querySelectorAll('#reports-table th .sort-icon').forEach(span => {
+                span.innerHTML = '';
+            });
+
+            const activeIndicator = document.getElementById(`sort-${state.sort}`);
+            if (activeIndicator) {
+                if (state.descending) {
+                    // Down chevron
+                    activeIndicator.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+                } else {
+                    // Up chevron
+                    activeIndicator.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>`;
+                }
+            }
+        }
+
+        // Build API request URL query string
+        function buildQueryParams(forExport = false) {
+            const params = new URLSearchParams();
+            
+            if (state.status) params.append('status', state.status);
+            
+            // Format dates into UTC ISO timestamps (backend expects datetime format)
+            if (state.date_from) {
+                const dt = new Date(`${state.date_from}T00:00:00Z`);
+                params.append('date_from', dt.toISOString());
+            }
+            if (state.date_to) {
+                const dt = new Date(`${state.date_to}T23:59:59Z`);
+                params.append('date_to', dt.toISOString());
+            }
+
+            params.append('sort', state.sort);
+            params.append('descending', state.descending);
+
+            if (!forExport) {
+                params.append('offset', state.offset);
+                params.append('limit', state.limit);
+            }
+
+            return params.toString();
+        }
+
+        // Async API fetch
+        async function fetchData() {
+            loader.classList.add('active');
+            try {
+                const queryStr = buildQueryParams(false);
+                const response = await fetch(`/reports?${queryStr}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                state.total = data.total;
+                renderTable(data.items);
+                updatePaginationControls();
+            } catch (error) {
+                console.error("Failed to fetch reports:", error);
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger); padding: 3rem;">Error loading reports database. Please try again.</td></tr>`;
+            } finally {
+                loader.classList.remove('active');
+            }
+        }
+
+        // Render rows in reports table
+        function renderTable(reports) {
+            tableBody.innerHTML = '';
+            
+            if (!reports || reports.length === 0) {
+                reportsTable.style.display = 'none';
+                noDataView.style.display = 'block';
+                return;
+            }
+
+            reportsTable.style.display = 'table';
+            noDataView.style.display = 'none';
+
+            reports.forEach(r => {
+                const tr = document.createElement('tr');
+                
+                // Status badge styling
+                let badgeClass = 'badge-pending';
+                if (r.status === 'approved') badgeClass = 'badge-approved';
+                else if (r.status === 'rejected') badgeClass = 'badge-rejected';
+                else if (r.status === 'archived') badgeClass = 'badge-archived';
+
+                // Currency format
+                const formattedAmount = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                }).format(r.amount);
+
+                // Date formatting
+                const dateObj = new Date(r.created_at);
+                const formattedDate = dateObj.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                tr.innerHTML = `
+                    <td style="font-weight: 600; color: var(--text-secondary);">#${r.id}</td>
+                    <td style="font-weight: 500;">${escapeHtml(r.title)}</td>
+                    <td><span class="badge ${badgeClass}">${r.status}</span></td>
+                    <td>${escapeHtml(r.owner)}</td>
+                    <td style="text-align: right; font-weight: 600; font-family: monospace;">${formattedAmount}</td>
+                    <td style="color: var(--text-secondary); font-size: 0.85rem;">${formattedDate}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Update visual pagination components
+        function updatePaginationControls() {
+            const pageNum = Math.floor(state.offset / state.limit) + 1;
+            const totalPages = Math.max(1, Math.ceil(state.total / state.limit));
+            
+            currentPageEl.textContent = pageNum;
+            totalPagesEl.textContent = totalPages;
+
+            btnPrev.disabled = state.offset === 0;
+            btnNext.disabled = (state.offset + state.limit) >= state.total;
+
+            const fromEntry = state.total === 0 ? 0 : state.offset + 1;
+            const toEntry = Math.min(state.total, state.offset + state.limit);
+            showingEntriesText.textContent = `Showing ${fromEntry} to ${toEntry} of ${state.total} entries`;
+        }
+
+        // Download CSV file triggering browser's standard download handler
+        function exportCSV() {
+            // We pass the same active filters to export what is currently showing
+            const queryStr = buildQueryParams(true);
+            window.location.href = `/reports/export?${queryStr}`;
+        }
+
+        // Quick HTML escape helper for safety
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
